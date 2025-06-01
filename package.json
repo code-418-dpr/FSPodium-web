@@ -86,7 +86,7 @@
         "recharts": "^2.15.3",
         "shadcn": "^2.5.0",
         "sonner": "^2.0.3",
-        "stylelint": "^16.19.1",
+        "stylelint": "^16.20.0",
         "stylelint-config-recommended": "^16.0.0",
         "stylelint-config-tailwindcss": "^1.0.0",
         "tailwind-merge": "^3.3.0",
