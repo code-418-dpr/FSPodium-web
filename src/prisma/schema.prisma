@@ -1,0 +1,181 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../app/generated/prisma"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  REGIONAL_REP
+  STRUCTURAL_UNIT
+}
+
+model User {
+  id                        String    @id @default(uuid())
+  name                      String
+  email                     String    @unique
+  phone                     BigInt    @unique
+  emailVerified             DateTime?
+  password                  String
+  role                      UserRole  @default(STRUCTURAL_UNIT)
+  tgId                      BigInt?   @unique
+  tgNotificationsEnabled    Boolean   @default(true)
+  emailNotificationsEnabled Boolean   @default(true)
+
+  units           Unit[]
+  notifications   Notification[]
+  supportMessages SupportMessage[]
+}
+
+model Unit {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  address   String   @unique
+  userId    String   @unique
+  createdAt DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id])
+  events       Event[]
+  plans        Plan[]
+  teams        Team[]
+  resultEvents ResultEvent[]
+  regionId     String?
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  COMPLETED
+  REFUSED
+}
+
+model UnitRequest {
+  id            String  @id @default(uuid())
+  name          String  @unique
+  address       String  @unique
+  username      String
+  email         String  @unique
+  phone         BigInt  @unique
+  status        Status  @default(PENDING)
+  refusalReason String?
+}
+
+model Team {
+  id             String  @id @default(uuid())
+  unitId         String
+  name           String
+  trainer        String?
+  representative String?
+
+  unit          Unit            @relation(fields: [unitId], references: [id])
+  teamsOfEvents TeamsOfEvents[]
+  sportsmans    Sportsman[]
+}
+
+model Sportsman {
+  id     String   @id @default(uuid())
+  name   String
+  bdate  DateTime @db.Date
+  isMale Boolean
+
+  teams Team[]
+}
+
+model SportObject {
+  id      String @id @default(uuid())
+  name    String
+  address String
+
+  events Event[]
+}
+
+model Discipline {
+  id   String @id
+  name String @unique
+
+  events Event[]
+}
+
+enum EventLevel {
+  REGION
+  FEDERAL_DISTRICT
+  ALL_RUSSIA
+}
+
+model Event {
+  id                String     @id @default(uuid())
+  unitId            String?
+  level             EventLevel @default(REGION)
+  title             String
+  ageRange          String
+  start             DateTime   @db.Date
+  end               DateTime   @db.Date
+  isOnline          Boolean    @default(false)
+  sportObjectsId    String?
+  participantsCount Int        @db.SmallInt
+  status            Status     @default(PENDING)
+  refusalReason     String?
+
+  unit          Unit?           @relation(fields: [unitId], references: [id])
+  sportObject   SportObject?    @relation(fields: [sportObjectsId], references: [id])
+  disciplines   Discipline[]
+  teamsOfEvents TeamsOfEvents[]
+  resultEvents  ResultEvent[]
+}
+
+model TeamsOfEvents {
+  teamId  String
+  eventId String
+  place   Int    @db.SmallInt
+
+  team  Team  @relation(fields: [teamId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@id([teamId, eventId])
+}
+
+model Plan {
+  id     String @id @default(uuid())
+  unitId String
+  year   Int    @db.SmallInt
+  status Status @default(PENDING)
+
+  unit Unit @relation(fields: [unitId], references: [id])
+}
+
+model ResultEvent {
+  id       String  @id @default(uuid())
+  eventId  String
+  unitId   String?
+  fileName String
+  filePath String
+
+  event Event @relation(fields: [eventId], references: [id])
+  unit  Unit? @relation(fields: [unitId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model SupportMessage {
+  id         String   @id @default(uuid())
+  tgAuthorId BigInt
+  request    String
+  response   String?
+  solved     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  answeredAt DateTime @updatedAt
+
+  user User @relation(fields: [tgAuthorId], references: [tgId])
+}
