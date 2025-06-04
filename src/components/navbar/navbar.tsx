@@ -23,7 +23,7 @@ export function Navbar({
     const scrolled = useScroll(50);
 
     const links: { href: string; label: string }[] = [];
-
+    
     if (user?.role === UserRole.REGIONAL_REP) {
         links.push({ href: "/admin", label: "Панель администратора" });
     } else if (user?.role === UserRole.STRUCTURAL_UNIT) {

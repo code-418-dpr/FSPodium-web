@@ -24,7 +24,6 @@ export const authOptions: NextAuthOptions = {
                 if (!user?.password) {
                     return null;
                 }
-
                 const passwordsMatch = await bcrypt.compare(password, user.password);
                 if (!passwordsMatch) {
                     return null;
@@ -34,7 +33,7 @@ export const authOptions: NextAuthOptions = {
                     id: user.id,
                     email: user.email,
                     name: user.name,
-                    role: UserRole.STRUCTURAL_UNIT,
+                    role: user.role,
                 };
             },
         }),
@@ -53,10 +52,14 @@ export const authOptions: NextAuthOptions = {
             if (token.role && token.id) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as UserRole;
+                session.user.name = token.name ?? null;
+                session.user.email = token.email!;
             }
 
+            session.user.id = token.id as string;
             session.user.name = token.name ?? null;
             session.user.email = token.email!;
+            session.user.role = token.role as UserRole;
 
 
             return session;
