@@ -5,8 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import { UserRole } from "@/app/generated/prisma";
 import { getUserByEmail, linkAccount } from "@/data/user";
-import { LoginSchema } from "@/schemas";
-
+import { LoginSchema } from "@/lib/schemas";
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -45,6 +44,8 @@ export const authOptions: NextAuthOptions = {
             if (user as User | undefined) {
                 token.id = user.id;
                 token.role = user.role;
+                token.name = user.name;
+                token.email = user.email;
             }
             return token;
         },
@@ -56,6 +57,7 @@ export const authOptions: NextAuthOptions = {
 
             session.user.name = token.name ?? null;
             session.user.email = token.email!;
+
 
             return session;
         },
@@ -73,5 +75,6 @@ export const authOptions: NextAuthOptions = {
         signIn: "/login",
         error: "/auth-error",
     },
+    
     secret: process.env.NEXTAUTH_SECRET,
 };

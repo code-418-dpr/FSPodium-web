@@ -49,14 +49,6 @@ export const SetPasswordSchema = z
         },
     );
 
-export const LoginSchema = z.object({
-    email: z.string().email({
-        message: "Email обязателен к заполнению",
-    }),
-    password: z.string().min(1, {
-        message: "Пароль обязателен к заполнению",
-    }),
-});
 
 export const RegisterSchema = z.object({
     name: z.string().min(1, {

@@ -12,7 +12,7 @@ import { FormFeedback } from "@/components/shared/form-feedback";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { LoginSchema } from "@/schemas";
+import { LoginSchema } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export const LoginForm = () => {
@@ -47,6 +47,7 @@ export const LoginForm = () => {
             if (signInResult?.error) {
                 throw new Error(signInResult.error);
             }
+            console.log(signInResult?.url);
             router.push("/");
             router.refresh();
         } catch (error) {
