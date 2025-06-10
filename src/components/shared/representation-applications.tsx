@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-export function RepresentationApplications({ applications }: { applications: UnitRequest[] }) {
+export function RepresentationApplications({
+    applications,
+    refreshApplications,
+}: {
+    applications: UnitRequest[];
+    refreshApplications: () => Promise<void>;
+}) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogAction, setDialogAction] = useState<"accept" | "decline">("accept");
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
@@ -101,6 +107,7 @@ export function RepresentationApplications({ applications }: { applications: Uni
                 onOpenChange={setDialogOpen}
                 action={dialogAction}
                 selectedRequestId={selectedRequestId}
+                refresh={refreshApplications}
             />
         </div>
     );

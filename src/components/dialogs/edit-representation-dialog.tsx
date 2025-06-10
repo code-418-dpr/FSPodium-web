@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,11 +11,11 @@ interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     representation: UnitWithUser | null;
+    refresh: () => Promise<void>;
 }
 
-export function EditRepresentationDialog({ open, onOpenChange, representation }: Props) {
+export function EditRepresentationDialog({ open, onOpenChange, representation, refresh }: Props) {
     const [editingRepresentation, setEditingRepresentation] = useState(representation);
-    const router = useRouter();
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -29,7 +27,7 @@ export function EditRepresentationDialog({ open, onOpenChange, representation }:
         );
 
         onOpenChange(false);
-        router.refresh();
+        await refresh();
     }
 
     return (
@@ -89,7 +87,9 @@ export function EditRepresentationDialog({ open, onOpenChange, representation }:
                         >
                             Отменить
                         </Button>
-                        <Button type="submit">Сохранить</Button>
+                        <Button type="submit" className="text-white">
+                            Сохранить
+                        </Button>
                     </div>
                 </form>
             </DialogContent>

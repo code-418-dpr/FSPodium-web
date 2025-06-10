@@ -7,8 +7,9 @@ import { Navbar } from "@/components/navbar/navbar";
 import { ThemeProvider } from "@/components/theming/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
 import { authOptions } from "@/lib/auth-options";
+import { cn } from "@/lib/utils";
+
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
     const session = await getServerSession(authOptions);
-    
+
     return (
         <html lang="ru" suppressHydrationWarning>
             <body className={cn(inter.className, "min-h-screen")}>

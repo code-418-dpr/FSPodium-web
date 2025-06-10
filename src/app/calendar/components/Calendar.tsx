@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-import { Event, Unit } from "@/app/generated/prisma";
+import { Status } from "@/app/generated/prisma";
 import { Combobox } from "@/components/ui/combobox";
+import { getStructuralUnits } from "@/data/structural-unit";
 import { ExtendedEvent } from "@/prisma/types";
 import { EventClickArg } from "@fullcalendar/core/index.js";
 import ruLocale from "@fullcalendar/core/locales/ru";
@@ -13,63 +14,49 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventDialog } from "./EventDialog";
 
 interface Item {
-    id: string; // Уникальный идентификатор округа
-    name: string; // Название округа
+    id: string;
+    name: string;
+}
+interface CalendarEvent {
+    id: string;
+    title: string;
+    start: string | Date;
+    end: string | Date;
+    extendedProps: ExtendedEvent;
 }
 const Calendar: React.FC = () => {
-    const [data, setData] = useState<ExtendedEvent[]>([]); // Вся информация о событии
-    const [, setFormattedData] = useState<unknown>([]);
+    const [data, setData] = useState<ExtendedEvent[]>([]);
+    const [formattedData, setFormattedData] = useState<CalendarEvent[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [, setError] = useState<string | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedEventData, setSelectedEventData] = useState<ExtendedEvent | null>(null);
+    const [representationItems, setRepresentation] = useState<Item[]>([]);
+    const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false); // Управление открытием диалога
-    const [selectedEventData, setSelectedEventData] = useState<ExtendedEvent | null>(null); // Полная информация о выбранном событии
-    const [, setRepresentation] = useState<Item[]>([]);
+    // Фильтрация событий по выбранному подразделению
+    const filteredEvents = useMemo(() => {
+        if (!selectedUnitId) return data;
 
-    // const filterEvents = () => {
-    //     return data.filter((event) => {
-    //         const isApproved = event.status === Status.APPROVED;
-    //
-    //         const isSupremeRepresentationSelected = event.unit === null;
-    //
-    //         if (selectedFederalDistrict && selectedDistrict) {
-    //             // Если выбраны и федеральный округ, и представительство
-    //             return isApproved && hasMatchingFederalDistrict && hasMatchingRepresentation;
-    //         } else if (selectedDistrict === "null") {
-    //             // Если выбрано "Верховное представительство ФСП"
-    //             return isApproved && isSupremeRepresentationSelected;
-    //         } else if (selectedFederalDistrict) {
-    //             // Если выбран только федеральный округ
-    //             return isApproved && hasMatchingFederalDistrict;
-    //         } else if (selectedDistrict) {
-    //             // Если выбрано только представительство
-    //             return isApproved && hasMatchingRepresentation;
-    //         }
-    //
-    //         return isApproved; // Если ничего не выбрано, возвращаем только APPROVED
-    //     });
-    // };
-    //
-    // const filteredEvents = useMemo(() => filterEvents(), [filterEvents]);
+        return data.filter((event) => event.unitId === selectedUnitId && event.status === Status.APPROVED);
+    }, [data, selectedUnitId]);
+
     const fetchRepresentations = async () => {
         try {
-            const representationResponse = await fetch("/api/calendar/representation");
-            if (!representationResponse.ok) {
-                throw new Error("Error connection API Representation");
-            }
-            const representationResult = (await representationResponse.json()) as unknown as Unit[];
-            const representations = [
-                { id: "null", name: "Центральное" }, // Добавляем элемент вручную
-                ...representationResult.map((representation: Unit) => ({
-                    id: representation.id,
-                    name: representation.name,
+            const units = await getStructuralUnits();
+            const items: Item[] = [
+                { id: "all", name: "Все подразделения" },
+                ...units.map((unit) => ({
+                    id: unit.id,
+                    name: unit.name,
                 })),
             ];
-            setRepresentation(representations);
+            setRepresentation(items);
         } catch (error) {
-            console.error("Error loading Representations: ", error);
+            console.error("Error loading Units: ", error);
         }
     };
+
     const fetchData = async () => {
         try {
             setIsLoading(true);
@@ -80,16 +67,17 @@ const Calendar: React.FC = () => {
                 throw new Error("Ошибка подключения к API");
             }
 
-            const result = (await response.json()) as unknown as ExtendedEvent[];
+            const result = (await response.json()) as ExtendedEvent[];
             setData(result);
 
-            const formattedResult: unknown = result.map((event: Event) => ({
+            const formatted = result.map((event) => ({
                 id: event.id,
-                title: event.title || "Событие ",
+                title: event.title || "Событие",
                 start: event.start,
                 end: event.end,
+                extendedProps: event, // Сохраняем полные данные события
             }));
-            setFormattedData(formattedResult);
+            setFormattedData(formatted);
         } catch (error) {
             setError(error instanceof Error ? error.message : "Произошла неизвестная ошибка");
         } finally {
@@ -103,42 +91,34 @@ const Calendar: React.FC = () => {
     }, []);
 
     const handleEventClick = (info: EventClickArg): void => {
-        const selectedData = data.find((e: Event) => e.id === String(info.event.id));
-        setSelectedEventData(selectedData ?? null); // Устанавливаем всю информацию о событии для диалогового окна
+        // Находим событие по id в полных данных
+        const selectedData = data.find((e) => e.id === info.event.id);
+        setSelectedEventData(selectedData ?? null);
         setIsDialogOpen(true);
     };
 
     return (
         <div>
             <div className="flex flex-row space-x-6 py-4">
-                <p className="px-2 py-1 text-lg">Представительство: </p>
+                <p className="px-2 py-1 text-lg">Структурное подразделение: </p>
                 <Combobox
-                    // items={representationItems} // Передаем список представительств
-                    // selectedId={selectedDistrict || ""} // Текущее выбранное значение
-                    // onIdChangeAction={(value) => {
-                    //     if (value === "null") {
-                    //         setSelectedFederalDistrict("");
-                    //         setSelectedDistrict(value); // Сбрасываем поле, если выбрано "Центральное"
-                    //     } else {
-                    //         setSelectedDistrict(value);
-                    //     }
-                    // }} // Обработчик изменения
-                    // className="w-1/3" // Класс для определения ширины объекта
-                    // disabled={isLoading} // Элемент всегда включён
-                    items={[]}
-                    onIdChangeAction={() => {
-                        return;
+                    items={representationItems}
+                    selectedId={selectedUnitId ?? "all"}
+                    onIdChangeAction={(id) => {
+                        setSelectedUnitId(id === "all" ? null : id);
                     }}
-                    selectedId="1"
-                    disabled={true}
+                    className="w-1/3"
+                    disabled={isLoading}
                 />
             </div>
+
             {isLoading && (
                 <p className="flex items-center justify-center py-52 text-5xl font-black">
                     Календарь загружается, подождите...
                 </p>
             )}
-            {!isLoading && data.length > 0 && (
+
+            {!isLoading && filteredEvents.length > 0 && (
                 <div>
                     <FullCalendar
                         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -154,24 +134,24 @@ const Calendar: React.FC = () => {
                             center: "title",
                             right: "dayGridMonth,dayGridWeek",
                         }}
-                        events={data}
+                        events={formattedData.filter(
+                            (event) => !selectedUnitId || event.extendedProps.unitId === selectedUnitId,
+                        )}
                         eventClick={handleEventClick}
-                        eventContent={(eventInfo) => <div>{eventInfo.event.title}</div>}
+                        eventContent={(eventInfo) => <div className="truncate px-1">{eventInfo.event.title}</div>}
                         eventStartEditable={false}
                         eventDurationEditable={false}
                     />
+
                     {selectedEventData && (
-                        <EventDialog
-                            isOpen={isDialogOpen}
-                            setIsOpen={setIsDialogOpen}
-                            event={selectedEventData} // Передача полной информации о событии
-                        />
+                        <EventDialog isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} event={selectedEventData} />
                     )}
                 </div>
             )}
-            {!isLoading && data.length <= 0 && (
+
+            {!isLoading && filteredEvents.length <= 0 && (
                 <p className="flex items-center justify-center py-52 text-center text-5xl font-black">
-                    По вашим параметрам не нашлось ни одного события
+                    {selectedUnitId ? "В выбранном подразделении нет событий" : "Нет доступных событий"}
                 </p>
             )}
         </div>

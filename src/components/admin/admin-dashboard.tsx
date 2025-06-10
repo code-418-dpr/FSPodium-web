@@ -19,12 +19,18 @@ export function AdminDashboard({
     events,
     notifications,
     user,
+    refreshEvents,
+    refreshUnits,
+    refreshApplications,
 }: {
-    applications: UnitRequest[];
-    representations: UnitWithUser[];
-    events: ExtendedEvent[];
-    notifications: Notification[];
+    applications: UnitRequest[] | null;
+    representations: UnitWithUser[] | null;
+    events: ExtendedEvent[] | null;
+    notifications: Notification[] | null;
     user: User;
+    refreshEvents: () => Promise<void>;
+    refreshUnits: () => Promise<void>;
+    refreshApplications: () => Promise<void>;
 }) {
     const [activeSection, setActiveSection] = useState("analytics");
 
@@ -50,11 +56,18 @@ export function AdminDashboard({
     const renderSection = () => {
         switch (activeSection) {
             case "applications":
-                return <AdminApplications applications={applications} events={events} />;
+                return (
+                    <AdminApplications
+                        applications={applications}
+                        events={events}
+                        refreshEvents={refreshEvents}
+                        refreshApplications={refreshApplications}
+                    />
+                );
             case "representations":
-                return <StructuralUnits units={representations} />;
+                return <StructuralUnits units={representations!} refreshUnits={refreshUnits} />;
             case "notifications":
-                return <Notifications notifications={notifications} user={user} />;
+                return <Notifications notifications={notifications!} user={user} />;
             default:
                 return <Analytics />;
         }

@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -23,11 +21,11 @@ interface Props {
     action: "accept" | "decline";
     selectedRequestId: string | null;
     forEvents?: boolean;
+    refresh?: () => Promise<void>;
 }
 
-export function RequestDialog({ open, onOpenChange, action, selectedRequestId, forEvents }: Props) {
+export function RequestDialog({ open, onOpenChange, action, selectedRequestId, forEvents, refresh }: Props) {
     const [refusalReason, setRefusalReason] = useState("");
-    const router = useRouter();
 
     async function handleConfirm() {
         if (!selectedRequestId) {
@@ -43,7 +41,7 @@ export function RequestDialog({ open, onOpenChange, action, selectedRequestId, f
         }
 
         onOpenChange(false);
-        router.refresh();
+        await refresh?.();
     }
 
     return (

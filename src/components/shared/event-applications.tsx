@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-import { useRouter } from "next/navigation";
-
 import { LevelBadge } from "@/components/badges/level-badge";
 import { StatusBadge } from "@/components/badges/status-badge";
 import { EventViewer } from "@/components/dialogs/event-viewer";
@@ -11,16 +9,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { acceptEventRequest } from "@/data/event";
 import { ExtendedEvent } from "@/prisma/types";
 
-export function EventApplications({ events, isAdmin }: { events: ExtendedEvent[]; isAdmin: boolean }) {
+export function EventApplications({
+    events,
+    isAdmin,
+    refreshEvents,
+}: {
+    events: ExtendedEvent[];
+    isAdmin: boolean;
+    refreshEvents: () => Promise<void>;
+}) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
-    const router = useRouter();
     const [viewerOpen, setViewerOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<ExtendedEvent | null>(null);
 
     const handleAccept = async (id: string) => {
         await acceptEventRequest(id);
-        router.refresh();
+        await refreshEvents();
     };
 
     const handleDecline = (id: string) => {
@@ -86,7 +91,7 @@ export function EventApplications({ events, isAdmin }: { events: ExtendedEvent[]
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                handleDecline(event.id);
+                                                void handleDecline(event.id);
                                             }}
                                             disabled={event.status !== "PENDING"}
                                             variant="destructive"
@@ -107,6 +112,7 @@ export function EventApplications({ events, isAdmin }: { events: ExtendedEvent[]
                 action={"decline"}
                 selectedRequestId={selectedRequestId}
                 forEvents={true}
+                refresh={refreshEvents}
             />
             <EventViewer open={viewerOpen} setOpen={setViewerOpen} event={selectedEvent} isAdmin={isAdmin} />
         </div>

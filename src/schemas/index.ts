@@ -49,7 +49,6 @@ export const SetPasswordSchema = z
         },
     );
 
-
 export const RegisterSchema = z.object({
     name: z.string().min(1, {
         message: "Наименование подразделения обязательно к заполнению",

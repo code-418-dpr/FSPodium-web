@@ -10,9 +10,10 @@ import { EditRepresentationDialog } from "../dialogs/edit-representation-dialog"
 
 interface Props {
     units: UnitWithUser[];
+    refreshUnits: () => Promise<void>;
 }
 
-export function StructuralUnits({ units }: Props) {
+export function StructuralUnits({ units, refreshUnits }: Props) {
     const [open, setOpen] = useState(false);
     const [editingUnit, setEditingUnit] = useState<UnitWithUser | null>(null);
 
@@ -59,6 +60,7 @@ export function StructuralUnits({ units }: Props) {
                 open={open}
                 onOpenChange={setOpen}
                 representation={editingUnit}
+                refresh={refreshUnits}
             />
         </div>
     );
