@@ -41,7 +41,10 @@ export const createEventRequest = async (
             disciplines: { connect: disciplinesIds.map((id) => ({ id })) },
         },
     });
-    await sendNewEventRequestNotification(event.title);
+    const unit = await db.unit.findUnique({
+        where: { id: unitId ?? "" },
+    });
+    await sendNewEventRequestNotification(event.title, unit?.name ?? "Центральное");
     return event;
 };
 
