@@ -1,21 +1,8 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Team } from "@/types/teams";
 
-interface Member {
-    fullName: string;
-}
-
-interface Region {
-    name: string;
-}
-
-interface Team {
-    name: string;
-    members: Member[];
-    region: Region;
-    top: number;
-}
 
 interface TeamDisplayProps {
     teams: Team[];

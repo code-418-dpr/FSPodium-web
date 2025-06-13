@@ -6,12 +6,13 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 
-import { ResultEvent, Team } from "@/app/generated/prisma";
+import { ResultEvent } from "@/app/generated/prisma";
 import { TeamsDisplay } from "@/components/shared/teams-display";
 import { buttonVariants } from "@/components/ui/button";
 import { getFileBlob } from "@/lib/files";
 import { sendFileToParser } from "@/lib/parser";
 import { cn } from "@/lib/utils";
+import { Team } from "@/types/teams";
 
 interface Props {
     resultFile: ResultEvent | null;
@@ -45,7 +46,7 @@ export function ResultViewer({ resultFile }: Props) {
         };
         void fetchResult();
     }, [resultFile]);
-
+    
     return (
         <div className="relative w-full flex-1">
             <div className="flex flex-col items-center justify-center">
