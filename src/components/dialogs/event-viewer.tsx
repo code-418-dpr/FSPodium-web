@@ -27,7 +27,12 @@ export function EventViewer({ open, setOpen, event, isAdmin }: EventViewerProps)
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="flex h-[80vh] max-w-4xl flex-col overflow-y-auto">
+            <DialogContent
+                className={cn(
+                    "flex max-w-4xl flex-col overflow-y-auto",
+                    event.status === "APPROVED" ? "h-[80vh]" : event.status === "COMPLETED" ? "h-[80vh]" : "h-[35vh]",
+                )}
+            >
                 <DialogHeader>
                     <DialogTitle>{event.title}</DialogTitle>
                 </DialogHeader>
@@ -46,7 +51,7 @@ export function EventViewer({ open, setOpen, event, isAdmin }: EventViewerProps)
                         <div>Дисциплины: {event.disciplines.map((discipline) => discipline.name).join(", ")}</div>
                     )}
                 </div>
-                {!isAdmin && event.status === "APPROVED" && (
+                {((!isAdmin && event.status === "APPROVED") || event.status === "COMPLETED") && (
                     <div className="mt-2 flex flex-col gap-2">
                         <p className="text-lg font-bold">Файлы</p>
                         <Tabs defaultValue="files" className="flex-1">

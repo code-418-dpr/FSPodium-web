@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
 
 import AuthProvider from "@/components/auth/auth-provider";
+import { Footer } from "@/components/footer/footer";
 import { Navbar } from "@/components/navbar/navbar";
 import { ThemeProvider } from "@/components/theming/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -28,8 +29,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
                         <Toaster />
                         <div className="bg-background flex min-h-full w-full flex-col pt-16">
-                            <Navbar user={session?.user ?? undefined} />
+                            <Navbar
+                                user={
+                                    session?.user
+                                        ? {
+                                              ...session.user,
+                                              name: session.user.name ?? undefined,
+                                              email: session.user.email,
+                                          }
+                                        : undefined
+                                }
+                            />
                             {children}
+                            <Footer />
                         </div>
                     </ThemeProvider>
                 </AuthProvider>

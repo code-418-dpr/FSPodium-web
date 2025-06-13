@@ -35,7 +35,7 @@ export function RequestDialog({ open, onOpenChange, action, selectedRequestId, f
         if (forEvents && action === "decline") {
             await declineEventRequest(selectedRequestId, refusalReason);
         } else if (action === "accept") {
-            await adminChangeRepresentationRequestStatus(selectedRequestId, true);
+            await adminChangeRepresentationRequestStatus(selectedRequestId, true); // Создать Unit и User
         } else {
             await adminChangeRepresentationRequestStatus(selectedRequestId, false, refusalReason);
         }

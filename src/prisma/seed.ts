@@ -235,7 +235,7 @@ async function seed() {
                         fileName: `result_${randomEvent.id.slice(0, 5)}_${r}.pdf`,
                         filePath: `/uploads/results/${randomEvent.id}_${r}.pdf`,
                         eventId: randomEvent.id,
-                        unitId: randomEvent.unitId || undefined,
+                        unitId: randomEvent.unitId ?? undefined,
                     },
                 });
             }

@@ -7,8 +7,9 @@ import { getAllDisciplines } from "@/data/discipline";
 import { getEventsFromUser } from "@/data/event";
 import { getUserNotifications } from "@/data/notifications";
 import { getStructuralUnitByUserId } from "@/data/structural-unit";
-import { getUserByEmail, getUserById } from "@/data/user";
+import { getUserByEmail } from "@/data/user";
 import { authOptions } from "@/lib/auth-options";
+import { ExtendedEvent } from "@/prisma/types";
 
 export default async function RegionalPage() {
     const session = await getServerSession(authOptions);
@@ -23,17 +24,17 @@ export default async function RegionalPage() {
     }
 
     const user = await getUserByEmail(session.user.email);
-    const events = await getEventsFromUser(session.user.id);
+    const events = (await getEventsFromUser(session.user.id)) as ExtendedEvent[];
     const representation = await getStructuralUnitByUserId(session.user.id);
     const notifications = await getUserNotifications(session.user.id);
     const disciplines = await getAllDisciplines();
 
     return (
         <RegionalDashboard
-            user={user}
+            user={user!}
             events={events}
             notifications={notifications}
-            unit={representation}
+            unit={representation!}
             disciplines={disciplines}
         />
     );

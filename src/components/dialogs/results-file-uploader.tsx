@@ -79,7 +79,7 @@ export function ResultsFileUploader({ eventId, setOpen }: Props) {
         <div className="space-y-6">
             <Card className="border-none p-0 shadow-none">
                 <CardHeader>
-                    <CardTitle>Загрузка итоговых протоколов</CardTitle>
+                    <CardTitle className="pt-4 text-center">Загрузка итоговых протоколов</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                     <form
@@ -93,9 +93,11 @@ export function ResultsFileUploader({ eventId, setOpen }: Props) {
                             onValueChange={handleFileUpload} // Обработчик изменения файлов
                             maxSize={1024 * 1024 * 10}
                         />
-                        <Button type="submit" disabled={isLoading}>
-                            Подтвердить загрузку
-                        </Button>
+                        <div className="flex justify-center pb-4">
+                            <Button type="submit" className="text-center text-white" disabled={isLoading}>
+                                Подтвердить загрузку
+                            </Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>

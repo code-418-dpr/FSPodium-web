@@ -38,13 +38,13 @@ export function EventDialog({ isOpen, setIsOpen, event }: Props) {
                         })()}
                     </p>
                     <p>
-                        <strong> Представительство: </strong>
+                        <strong> Структурное полразделение: </strong>
                         <span className="underline underline-offset-4">
                             {event.unit ? event.unit.name : "центральное"}
                         </span>
                     </p>
                     <p className={event.unit ? "py-3" : "hidden"}>
-                        <strong>Контактная информация представительства: </strong>
+                        <strong>Контактная информация структурного полразделения: </strong>
                         <span className="block">{event.unit?.user.name ?? "Данные отсутствуют"}</span>
                         <span>{event.unit?.user.name ?? ""}</span>
                     </p>

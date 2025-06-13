@@ -2,8 +2,6 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { UserRole } from "@/app/generated/prisma";
-
 const protectedRoutes = ["/history", "/recommendations", "/settings"];
 
 export async function middleware(request: NextRequest) {
@@ -14,9 +12,6 @@ export async function middleware(request: NextRequest) {
         const loginUrl = new URL("/", request.url);
         if (!token) {
             loginUrl.searchParams.set("callbackUrl", pathname);
-            return NextResponse.redirect(loginUrl);
-        }
-        if (token.role !== UserRole.STRUCTURAL_UNIT) {
             return NextResponse.redirect(loginUrl);
         }
     }

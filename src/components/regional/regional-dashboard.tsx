@@ -56,7 +56,7 @@ export function RegionalDashboard({ events, notifications, unit, disciplines, us
             case "help":
                 return <Help />;
             case "events":
-                return <Events events={events} disciplines={disciplines} unit={unit} />;
+                return <Events events={events} disciplines={disciplines} unit={unit} userRole={user.role.toString()} />;
             default:
                 return <Analytics user={user} />;
         }

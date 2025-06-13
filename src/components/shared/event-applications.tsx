@@ -91,7 +91,7 @@ export function EventApplications({
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                void handleDecline(event.id);
+                                                handleDecline(event.id);
                                             }}
                                             disabled={event.status !== "PENDING"}
                                             variant="destructive"

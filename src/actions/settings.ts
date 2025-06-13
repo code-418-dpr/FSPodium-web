@@ -53,7 +53,7 @@ export const setPasswordSettings = async (values: z.infer<typeof PasswordSetting
         return { error: "Unauthorized" };
     }
 
-    const dbUser = await getUserById(user.id);
+    const dbUser = await getUserByEmail(user.email);
 
     if (!dbUser) {
         return { error: "Unauthorized" };

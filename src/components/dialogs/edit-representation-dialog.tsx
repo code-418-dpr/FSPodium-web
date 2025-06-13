@@ -34,7 +34,7 @@ export function EditRepresentationDialog({ open, onOpenChange, representation, r
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="text-white" aria-describedby={undefined}>
                 <DialogHeader>
-                    <DialogTitle>Редактировать представительство</DialogTitle>
+                    <DialogTitle>Редактировать структурное подразделение</DialogTitle>
                 </DialogHeader>
                 <form
                     onSubmit={(e) => {

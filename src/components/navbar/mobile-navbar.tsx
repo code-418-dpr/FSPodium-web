@@ -77,7 +77,7 @@ export function MobileNavbar({ links }: Props) {
                                 <div className="flex-1 truncate">
                                     <span className="flex-1 truncate font-bold">{user.name ?? user.email}</span>
                                 </div>
-                                <UserAvatar user={user} className="size-8" />
+                                <UserAvatar className="size-8" />
                             </div>
                             <MobileLink href="/settings">Настройки</MobileLink>
                             <Button

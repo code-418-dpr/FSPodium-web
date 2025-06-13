@@ -58,7 +58,7 @@ export function RepresentationApplications({
 
     return (
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Заявки на представительство</h2>
+            <h2 className="text-2xl font-bold">Заявки на структурные подразделения</h2>
             <Table>
                 <TableHeader>
                     <TableRow>

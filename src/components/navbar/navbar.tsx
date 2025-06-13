@@ -27,7 +27,7 @@ export function Navbar({
     if (user?.role === UserRole.REGIONAL_REP) {
         links.push({ href: "/admin", label: "Панель администратора" });
     } else if (user?.role === UserRole.STRUCTURAL_UNIT) {
-        links.push({ href: "/regional", label: "Управление представительством" });
+        links.push({ href: "/regional", label: "Управление подразделением" });
     }
 
     if (user) {
@@ -56,7 +56,24 @@ export function Navbar({
                             </NavbarLink>
                         ))}
                     </div>
-                    <UserButton user={user} />
+                    <UserButton
+                        user={
+                            user
+                                ? {
+                                      id: user.id ?? "unknown-id",
+                                      name: user.name ?? "Без имени",
+                                      email: user.email ?? "Не заполнено",
+                                      phone: user.phone ?? BigInt(0),
+                                      emailVerified: user.emailVerified ?? null,
+                                      password: user.password ?? "",
+                                      role: user.role ?? UserRole.STRUCTURAL_UNIT,
+                                      tgId: user.tgId ?? null,
+                                      tgNotificationsEnabled: user.tgNotificationsEnabled ?? false,
+                                      emailNotificationsEnabled: user.emailNotificationsEnabled ?? false,
+                                  }
+                                : undefined
+                        }
+                    />
                 </div>
                 <div className="flex md:hidden">
                     <MobileNavbar links={links} />

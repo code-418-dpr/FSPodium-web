@@ -267,7 +267,9 @@ export function Analytics() {
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Наиболее активное представительство</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Наиболее активное структурное подразделение
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{popularRepresentation}</div>
