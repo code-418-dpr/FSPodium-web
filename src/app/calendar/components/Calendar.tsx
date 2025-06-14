@@ -68,14 +68,17 @@ const Calendar: React.FC = () => {
             }
 
             const result = (await response.json()) as ExtendedEvent[];
+            if (!Array.isArray(result)) {
+                throw new Error("Неверный формат данных от API");
+            }
             setData(result);
-
-            const formatted = result.map((event) => ({
+            const approvedEvents = result.filter((event) => event.status === "APPROVED");
+            const formatted = approvedEvents.map((event) => ({
                 id: event.id,
                 title: event.title || "Событие",
                 start: event.start,
                 end: event.end,
-                extendedProps: event, // Сохраняем полные данные события
+                extendedProps: event,
             }));
             setFormattedData(formatted);
         } catch (error) {

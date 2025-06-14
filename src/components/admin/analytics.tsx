@@ -3,7 +3,7 @@ import { Bar, BarChart, Line, LineChart, ResponsiveContainer, XAxis, YAxis } fro
 
 import { useEffect, useState } from "react";
 
-import { Event, EventLevel, Status } from "@/app/generated/prisma";
+import { Event, Status } from "@/app/generated/prisma";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAndFilterEventsForAll } from "@/data/event";
@@ -95,32 +95,23 @@ export function Analytics() {
         const result = Object.entries(maxCountEvent).find(([, count]) => count === maxCount);
         return result ?? [];
     };
-    const getPopularLevel = () => {
-        const levelCounts = events.reduce<Record<string, number>>((counts, event) => {
-            if (event.status === Status.APPROVED) {
-                const level = event.level;
-                counts[level] = (counts[level] ?? 0) + 1;
-            }
+
+    const getPopularDiscipline = () => {
+        const disciplineCounts = events
+        .filter((event) => event.status === Status.APPROVED)
+        .flatMap((event) => event.disciplines)
+        .reduce<Record<string, number>>((counts, discipline) => {
+            counts[discipline.name] = (counts[discipline.name] || 0) + 1;
             return counts;
         }, {});
-        const maxCount = Math.max(...Object.values(levelCounts));
-
-        return Object.entries(levelCounts)
+        const maxCount = Math.max(...Object.values(disciplineCounts));
+        return Object.entries(disciplineCounts)
             .filter(([, count]) => count === maxCount)
-            .map(([level]) => {
-                switch (level) {
-                    case EventLevel.REGION:
-                        return "Региональные";
-                    case EventLevel.FEDERAL_DISTRICT:
-                        return "Федеральные";
-                    case EventLevel.ALL_RUSSIA:
-                        return "Всероссийские";
-                    default:
-                        return level;
-                }
-            })
+            .map(([discipline]) => discipline)
             .join(", ");
     };
+
+
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -133,11 +124,11 @@ export function Analytics() {
             (eventStartDate >= previousMonthStart && eventStartDate <= previousMonthEnd) ||
             (eventEndDate >= previousMonthStart && eventEndDate <= previousMonthEnd) ||
             (eventStartDate <= previousMonthStart && eventEndDate >= previousMonthEnd);
-        return total + (isLastMonthEvent && event.status === Status.APPROVED ? event.participantsCount : 0);
+        return total + (isLastMonthEvent && event.status === Status.COMPLETED ? event.participantsCount : 0);
     }, 0);
     const popularRepresentation = getPopularRepresentation();
     const maxEventsCount = getMaxCountEvents();
-    const popularDiscipline = getPopularLevel();
+    const popularDiscipline = getPopularDiscipline();
     const pendingEventsCount = events.filter((event) => event.status === Status.PENDING).length;
     const onlineEvents = events.filter((event) => {
         const eventStartDate = new Date(event.start);
@@ -302,7 +293,7 @@ export function Analytics() {
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Виды событий в этом месяце</CardTitle>
+                        <CardTitle className="text-sm font-medium">Виды событий проходящих в этом месяце</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-xl font-bold">

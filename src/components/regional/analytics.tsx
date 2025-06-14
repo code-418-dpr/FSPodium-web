@@ -55,7 +55,7 @@ export function Analytics({ user }: Props) {
         const levelData: Record<string, number> = {};
 
         events.forEach((event) => {
-            let level: string = event.level; // FEDERAL_DISTRICT, ALL_RUSSIA, REGION
+            let level: string = event.level; 
             if (level === EventLevel.ALL_RUSSIA) {
                 level = "ВСЕРОССИЙСКИЕ";
             } else if (level === EventLevel.FEDERAL_DISTRICT) {
@@ -85,17 +85,17 @@ export function Analytics({ user }: Props) {
     }).length;
     const completedAllEvent = events.filter((event) => {
         const eventEndDate = new Date(event.end);
-        return event.status === Status.APPROVED && eventEndDate <= currentDate;
+        return event.status === Status.COMPLETED && eventEndDate <= currentDate;
     }).length;
     const completedEventsLastMonth = events.filter((event) => {
         const eventStartDate = new Date(event.start);
         const eventEndDate = new Date(event.end);
         return (
-            event.status === Status.APPROVED && eventStartDate >= previousMonthStart && eventEndDate <= previousMonthEnd
+            event.status === Status.COMPLETED && eventStartDate >= previousMonthStart && eventEndDate <= previousMonthEnd
         );
     }).length;
     const getNextEvent = () => {
-        const upcomingEvents = events.filter((event) => new Date(event.start) >= currentDate);
+        const upcomingEvents = events.filter((event) => new Date(event.start) >= currentDate && event.status === Status.APPROVED);
         upcomingEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
         return upcomingEvents.length > 0 ? upcomingEvents[0] : null;
     };
@@ -111,7 +111,7 @@ export function Analytics({ user }: Props) {
 
     const getAllParticipantsCount = () => {
         return events.reduce(
-            (total, event) => total + (event.status === Status.APPROVED ? event.participantsCount : 0),
+            (total, event) => total + (event.status === Status.COMPLETED ? event.participantsCount : 0),
             0,
         );
     };
@@ -123,7 +123,7 @@ export function Analytics({ user }: Props) {
             (eventStartDate >= previousMonthStart && eventStartDate <= previousMonthEnd) ||
             (eventEndDate >= previousMonthStart && eventEndDate <= previousMonthEnd) ||
             (eventStartDate <= previousMonthStart && eventEndDate >= previousMonthEnd);
-        return total + (isLastMonthEvent && event.status === Status.APPROVED ? event.participantsCount : 0);
+        return total + (isLastMonthEvent && event.status === Status.COMPLETED ? event.participantsCount : 0);
     }, 0);
     const getPopularLevel = () => {
         const levelCounts: Record<EventLevel, number> = events.reduce(
@@ -154,6 +154,8 @@ export function Analytics({ user }: Props) {
             })
             .join(", ");
     };
+
+    
     const allParticipantsCount = getAllParticipantsCount();
     const popularDiscipline = getPopularLevel();
     const currentEvent = getCurrentEvent();
@@ -207,7 +209,7 @@ export function Analytics({ user }: Props) {
                 </Card>
                 <Card className="break-inside-avoid">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Ближайшее событие</CardTitle>
+                        <CardTitle className="text-sm font-medium">Ближайшее событие подразделения</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {currentEvent ? (
@@ -251,7 +253,7 @@ export function Analytics({ user }: Props) {
                 </Card>
                 <Card className="break-inside-avoid">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Виды событий</CardTitle>
+                        <CardTitle className="text-sm font-medium">Виды утвержденных событий</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-xl font-bold">
@@ -283,13 +285,12 @@ export function Analytics({ user }: Props) {
                                     stroke="none"
                                 >
                                     {result.map((entry, index) => {
-                                        // Определение цвета для каждого сегмента
                                         const fillColor =
                                             entry.name === "Принято"
-                                                ? "#3B83F6" // Синий (как у BarChart)
+                                                ? "#3B83F6"
                                                 : entry.name === "Ожидание"
-                                                  ? "#FFBB28" // Оранжевый
-                                                  : "#FF6384"; // Красный
+                                                  ? "#FFBB28" 
+                                                  : "#FF6384"; 
                                         return <Cell key={`cell-${index}`} fill={fillColor} />;
                                     })}
                                 </Pie>

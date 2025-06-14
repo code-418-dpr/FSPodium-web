@@ -24,7 +24,6 @@ export function EventViewer({ open, setOpen, event, isAdmin }: EventViewerProps)
     if (!event) {
         return null;
     }
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent
@@ -70,7 +69,7 @@ export function EventViewer({ open, setOpen, event, isAdmin }: EventViewerProps)
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <FileText className="h-5 w-5 text-gray-500" />
-                                                        <span className="font-medium">{file.fileName}</span>
+                                                        <span className="font-medium truncate max-w-3xs">{file.fileName}</span>
                                                     </div>
                                                     {file.fileName.endsWith(".pdf") ? (
                                                         <PdfDialog file={file} />
