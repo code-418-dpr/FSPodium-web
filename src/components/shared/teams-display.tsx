@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Team } from "@/types/teams";
 
-
 interface TeamDisplayProps {
     teams: Team[];
 }

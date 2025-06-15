@@ -46,7 +46,7 @@ export function ResultViewer({ resultFile }: Props) {
         };
         void fetchResult();
     }, [resultFile]);
-    
+
     return (
         <div className="relative w-full flex-1">
             <div className="flex flex-col items-center justify-center">

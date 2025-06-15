@@ -98,19 +98,18 @@ export function Analytics() {
 
     const getPopularDiscipline = () => {
         const disciplineCounts = events
-        .filter((event) => event.status === Status.APPROVED)
-        .flatMap((event) => event.disciplines)
-        .reduce<Record<string, number>>((counts, discipline) => {
-            counts[discipline.name] = (counts[discipline.name] || 0) + 1;
-            return counts;
-        }, {});
+            .filter((event) => event.status === Status.APPROVED)
+            .flatMap((event) => event.disciplines)
+            .reduce<Record<string, number>>((counts, discipline) => {
+                counts[discipline.name] = (counts[discipline.name] || 0) + 1;
+                return counts;
+            }, {});
         const maxCount = Math.max(...Object.values(disciplineCounts));
         return Object.entries(disciplineCounts)
             .filter(([, count]) => count === maxCount)
             .map(([discipline]) => discipline)
             .join(", ");
     };
-
 
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);

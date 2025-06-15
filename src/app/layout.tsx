@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                                         : undefined
                                 }
                             />
-                            {children}
+                            <div className="min-h-[80vh]">{children}</div>
                             <Footer />
                         </div>
                     </ThemeProvider>

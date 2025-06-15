@@ -55,7 +55,7 @@ export function Analytics({ user }: Props) {
         const levelData: Record<string, number> = {};
 
         events.forEach((event) => {
-            let level: string = event.level; 
+            let level: string = event.level;
             if (level === EventLevel.ALL_RUSSIA) {
                 level = "ВСЕРОССИЙСКИЕ";
             } else if (level === EventLevel.FEDERAL_DISTRICT) {
@@ -91,11 +91,15 @@ export function Analytics({ user }: Props) {
         const eventStartDate = new Date(event.start);
         const eventEndDate = new Date(event.end);
         return (
-            event.status === Status.COMPLETED && eventStartDate >= previousMonthStart && eventEndDate <= previousMonthEnd
+            event.status === Status.COMPLETED &&
+            eventStartDate >= previousMonthStart &&
+            eventEndDate <= previousMonthEnd
         );
     }).length;
     const getNextEvent = () => {
-        const upcomingEvents = events.filter((event) => new Date(event.start) >= currentDate && event.status === Status.APPROVED);
+        const upcomingEvents = events.filter(
+            (event) => new Date(event.start) >= currentDate && event.status === Status.APPROVED,
+        );
         upcomingEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
         return upcomingEvents.length > 0 ? upcomingEvents[0] : null;
     };
@@ -155,7 +159,6 @@ export function Analytics({ user }: Props) {
             .join(", ");
     };
 
-    
     const allParticipantsCount = getAllParticipantsCount();
     const popularDiscipline = getPopularLevel();
     const currentEvent = getCurrentEvent();
@@ -289,8 +292,8 @@ export function Analytics({ user }: Props) {
                                             entry.name === "Принято"
                                                 ? "#3B83F6"
                                                 : entry.name === "Ожидание"
-                                                  ? "#FFBB28" 
-                                                  : "#FF6384"; 
+                                                  ? "#FFBB28"
+                                                  : "#FF6384";
                                         return <Cell key={`cell-${index}`} fill={fillColor} />;
                                     })}
                                 </Pie>
