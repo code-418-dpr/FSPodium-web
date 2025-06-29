@@ -199,9 +199,11 @@ async function seed() {
 
         // 6. Создаем дисциплины (Discipline)
         const disciplines = [
-            { id: "d1", name: "Футбол" },
-            { id: "d2", name: "Баскетбол" },
-            { id: "d3", name: "Волейбол" },
+            { id: "d1", name: "Программирование продуктовое" },
+            { id: "d2", name: "Программирование алгоритмическое" },
+            { id: "d3", name: "Программирование беспилотных авиационных систем" },
+            { id: "d4", name: "Программирование робототехники" },
+            { id: "d5", name: "Программирование систем информационной безопасности" },
         ];
 
         for (const disc of disciplines) {
@@ -233,7 +235,7 @@ async function seed() {
                 await db.resultEvent.create({
                     data: {
                         fileName: `result_${randomEvent.id.slice(0, 5)}_${r}.pdf`,
-                        filePath: `/uploads/results/${randomEvent.id}_${r}.pdf`,
+                        filePath: `uploads/results/${randomEvent.id}_${r}.pdf`,
                         eventId: randomEvent.id,
                         unitId: randomEvent.unitId ?? undefined,
                     },
